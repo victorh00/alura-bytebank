@@ -14,13 +14,20 @@ lista.push(1, 2, 3, 4, 5);
 
 // tipos personalizados (alias)
 type Transacao = {
-    tipoTransacao: string;
+    tipoTransacao: TipoTransacao; // string;
     data: Date;
     valor: number;
 }
 
+// enums: uso chave para obter algum valor correto/fixo/constante. código mais modular.
+enum TipoTransacao {
+    DEPOSITO = 'Depósito', 
+    TRANSFERENCIA = 'Transferência',
+    PGTO_BOLETO = 'Pagamento de Boleto'
+}
+
 const novaTransacao: Transacao = {
-    tipoTransacao: '',
+    tipoTransacao: TipoTransacao.DEPOSITO,  // Type '""' is not assignable to type 'TipoTransacao'.ts(2322)
     data: new Date(),
     valor: 0
 }
