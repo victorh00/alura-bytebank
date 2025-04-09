@@ -1,2 +1,2 @@
-import "./dist/js/components/nova-transacao-component.js"
-import "./dist/js/components/saldo-component.js"
+import "./components/nova-transacao-component.js"
+import "./components/saldo-component.js"
