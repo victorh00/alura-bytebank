@@ -1,4 +1,6 @@
-console.log('nova-transacao-component.ts');
+import { TipoTransacao } from "../types/TipoTransacao.js";
+import { Transacao } from "../types/Transacao.js";
+import { getSaldo, setSaldo } from "./saldo-component.js";
 
 const elementoForm = document.querySelector(".block-nova-transacao form") as HTMLFormElement;
 elementoForm.addEventListener('submit', (event) => {
@@ -12,8 +14,9 @@ elementoForm.addEventListener('submit', (event) => {
     const inputData = elementoForm.querySelector('#data') as HTMLInputElement;
 
     let tipoTransacao: TipoTransacao = inputTipoTransacao.value as TipoTransacao;
-    let valor: number = inputValor.valueAsNumber;
     let data: Date = new Date(inputData.value);
+    let valor: number = inputValor.valueAsNumber;
+    let saldo: number = getSaldo();
 
     if(tipoTransacao == TipoTransacao.DEPOSITO) {
         saldo += valor;
@@ -24,8 +27,7 @@ elementoForm.addEventListener('submit', (event) => {
         return;
     }
 
-    elementoSaldo.textContent = formatarMoeda(saldo);
-
+    setSaldo(saldo);
 
     const novaTransacao: Transacao = {
         tipoTransacao: tipoTransacao,

@@ -1,6 +1,4 @@
-"use strict";
-console.log('TipoTransacao.ts');
-var TipoTransacao;
+export var TipoTransacao;
 (function (TipoTransacao) {
     TipoTransacao["DEPOSITO"] = "Dep\u00F3sito";
     TipoTransacao["TRANSFERENCIA"] = "Transfer\u00EAncia";
