@@ -5,8 +5,8 @@ import Conta from "../types/Conta.js";
 const elementoSaldo = document.querySelector(".saldo-valor .valor") as HTMLElement;
 const elementoDataAcesso = document.querySelector(".block-saldo time") as HTMLElement;
 
-renderizarInfo();
-function renderizarInfo(): void {
+renderizarSaldo();
+function renderizarSaldo(): void {
     if (elementoDataAcesso != null) {
         elementoDataAcesso.textContent = formatarData(Conta.getDataDeAcesso(), FormatoData.DIASEMANA_DIA_MES_ANO);
     }
@@ -15,10 +15,10 @@ function renderizarInfo(): void {
     }
 }
 
-const infoComponent = {
+const SaldoComponent = {
     atualizar() {
-        renderizarInfo();
+        renderizarSaldo();
     }
 }
 
-export default infoComponent;
+export default SaldoComponent;

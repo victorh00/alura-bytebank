@@ -20,8 +20,14 @@ export function formatarData(data: Date, formato: FormatoData = FormatoData.PADR
             day: '2-digit',
             month: '2-digit',
         });
+    } else if (formato === FormatoData.MES_ANO) {
+        return capitalizeString(data.toLocaleDateString('pt-br', { month: 'long'}) + ' ' + data.getFullYear());
     } else {
         return data.toLocaleDateString('pt-br');
     }
+}
+
+function capitalizeString(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
 }
 

@@ -29,9 +29,7 @@ const Conta = {
         let labelGrupoAtual: string = '';
 
         transacoesOrdenadas.forEach((transacao) => {
-            console.log(`transacao.data >>> ${transacao.data}`);
-            let labelTransacaoAtual: string = transacao.data.toLocaleDateString('pt-br', { month: 'long', year: 'numeric' });
-            console.log(`labelTransacaoAtual >>> ${labelTransacaoAtual}`);
+            let labelTransacaoAtual: string = formatarData(transacao.data, FormatoData.MES_ANO);
             if (labelTransacaoAtual !== labelGrupoAtual) {
                 labelGrupoAtual = labelTransacaoAtual;
                 gruposTransacoes.push({
@@ -42,8 +40,6 @@ const Conta = {
             gruposTransacoes.at(-1).transacoes.push(transacao);
 
         });
-        console.log('aqui')
-        console.log(gruposTransacoes);
         return gruposTransacoes;
     },
 
@@ -71,35 +67,14 @@ const Conta = {
             this.depositar(novaTransacao.valor);
         } else if (novaTransacao.tipoTransacao == TipoTransacao.TRANSFERENCIA || novaTransacao.tipoTransacao == TipoTransacao.PGTO_BOLETO) {
             this.debitar(novaTransacao.valor);
+            novaTransacao.valor *= -1;
         } else {
             throw new Error('Selecione uma transação válida.');
         }
         Conta.transacoes.push(novaTransacao);
-        // console.log(Conta.transacoes)
-        // console.log(Conta.getGruposTransacoes());
         localStorage.setItem('transacoes', JSON.stringify(Conta.transacoes));
     }
 };
 
-// localStorage.removeItem('transacoes');
-// let a: Date = new Date('2025-01-01');
-// console.log('Date usando string 2025-01-01 pura')
-// console.log(a);
-
-// console.log('data pura to UTC string')
-// console.log(a);
-
-// console.log('a.getHours()');
-// console.log(a.getHours());
-// console.log('a toUTC+3: ');
-// a.setHours(a.getHours() + 3);
-// console.log(a)
-// console.log(formatarData(a, FormatoData.DIASEMANA_DIA_MES_ANO));
-// console.log('a toUTC+10');
-// a.setHours(a.getHours() + 10);
-// console.log(a);
-
-
-// console.log(formatarData(a, FormatoData.DIASEMANA_DIA_MES_ANO))
 Conta.getGruposTransacoes();
 export default Conta; 
