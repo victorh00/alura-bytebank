@@ -12,8 +12,9 @@ elementoForm.addEventListener('submit', (event) => {
         const inputValor = elementoForm.querySelector('#valor');
         const inputData = elementoForm.querySelector('#data');
         let tipoTransacao = inputTipoTransacao.value;
-        let data = new Date(inputData.value);
+        let data = new Date(inputData.value); // cria data em UTC local
         let valor = inputValor.valueAsNumber;
+        data.setHours(data.getHours() + 3); // converte para UTC-3 brasilia
         const novaTransacao = {
             tipoTransacao: tipoTransacao,
             valor: valor,

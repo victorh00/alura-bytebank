@@ -2,6 +2,8 @@ import { TipoTransacao } from "../types/TipoTransacao.js";
 import { Transacao } from "../types/Transacao.js";
 import Conta from "../types/Conta.js";
 import infoComponent from "./info-component.js";
+import { formatarData } from "../utils/formatters.js";
+import { FormatoData } from "../types/FormatoData.js";
 
 const elementoForm = document.querySelector(".block-nova-transacao form") as HTMLFormElement;
 elementoForm.addEventListener('submit', (event) => {
@@ -17,8 +19,10 @@ elementoForm.addEventListener('submit', (event) => {
         const inputData = elementoForm.querySelector('#data') as HTMLInputElement;
 
         let tipoTransacao: TipoTransacao = inputTipoTransacao.value as TipoTransacao;
-        let data: Date = new Date(inputData.value);
+        let data: Date = new Date(inputData.value); // cria data em UTC local
         let valor: number = inputValor.valueAsNumber;
+             
+        data.setHours(data.getHours() + 3); // converte para UTC-3 brasilia
 
         const novaTransacao: Transacao = {
             tipoTransacao: tipoTransacao,
@@ -29,6 +33,7 @@ elementoForm.addEventListener('submit', (event) => {
         Conta.registrarTransacao(novaTransacao);
         infoComponent.atualizar();
         elementoForm.reset();
+
     } catch (erro) {
         alert(erro.message);
     }

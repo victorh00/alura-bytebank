@@ -1,36 +1,68 @@
 import { Transacao } from "./Transacao.js";
 import { TipoTransacao } from "./TipoTransacao.js";
+import { GrupoTransacao } from "./GrupoTransacao.js";
+import { formatarData } from "../utils/formatters.js";
+import { FormatoData } from "./FormatoData.js";
 
 const Conta = {
-    saldo: 3000 as number,
+    saldo: (JSON.parse(localStorage.getItem('saldo')) || 0) as number,
 
     transacoes: (JSON.parse(localStorage.getItem('transacoes'), (key: string, value: string) => {
-        
+        if (key === 'data') {
+            return new Date(value);
+        }
+        return value;
     }) || []) as Transacao[],
 
     getSaldo(): number {
-        return this.saldo;
+        return Conta.saldo;
     },
 
     getDataDeAcesso(): Date {
         return new Date();
     },
 
+    getGruposTransacoes(): GrupoTransacao[] {
+        const gruposTransacoes: GrupoTransacao[] = [];
+        const listaTransacoes: Transacao[] = structuredClone(Conta.transacoes);
+        const transacoesOrdenadas: Transacao[] = listaTransacoes.sort((a, b) => a.data.getTime() - b.data.getTime());
+        let labelGrupoAtual: string = '';
+
+        transacoesOrdenadas.forEach((transacao) => {
+            // console.log(`transacao.data >>> ${transacao.data}`);
+            let labelTransacaoAtual: string = transacao.data.toLocaleDateString('pt-br', { month: 'long', year: 'numeric' });
+            // console.log(`labelTransacaoAtual >>> ${labelTransacaoAtual}`);
+            if (labelTransacaoAtual !== labelGrupoAtual) {
+                labelGrupoAtual = labelTransacaoAtual;
+                gruposTransacoes.push({
+                    label: labelGrupoAtual,
+                    transacoes: []
+                })
+            }
+            gruposTransacoes.at(-1).transacoes.push(transacao);
+
+        });
+        // console.log(gruposTransacoes);
+        return gruposTransacoes;
+    },
+
     debitar(valor: number): void {
-        if(valor <= 0) {
+        if (valor <= 0) {
             throw new Error('O valor a debitar deve ser maior que zero.');
         }
-        if(valor > this.saldo) {
-            throw new Error('Saldo insuficiente.');
+        if (valor > Conta.saldo) {
+            throw new Error(`Saldo insuficiente: ${Conta.saldo}`);
         }
-        this.saldo -= valor;
+        Conta.saldo -= valor;
+        localStorage.setItem('saldo', Conta.saldo.toString());
     },
 
     depositar(valor: number): void {
-        if(valor <= 0) {
+        if (valor <= 0) {
             throw new Error('O valor a debitar deve ser maior que zero.');
         }
-        this.saldo += valor;
+        Conta.saldo += valor;
+        localStorage.setItem('saldo', Conta.saldo.toString());
     },
 
     registrarTransacao(novaTransacao: Transacao): void {
@@ -41,10 +73,31 @@ const Conta = {
         } else {
             throw new Error('Selecione uma transação válida.');
         }
-        this.transacoes.push(novaTransacao);
-        console.log(novaTransacao);
-        localStorage.setItem('transacoes', JSON.stringify(this.transacoes));
+        Conta.transacoes.push(novaTransacao);
+        // console.log(Conta.transacoes)
+        // console.log(Conta.getGruposTransacoes());
+        localStorage.setItem('transacoes', JSON.stringify(Conta.transacoes));
     }
 };
 
-export default Conta;
+// localStorage.removeItem('transacoes');
+// let a: Date = new Date('2025-01-01');
+// console.log('Date usando string 2025-01-01 pura')
+// console.log(a);
+
+// console.log('data pura to UTC string')
+// console.log(a);
+
+// console.log('a.getHours()');
+// console.log(a.getHours());
+// console.log('a toUTC+3: ');
+// a.setHours(a.getHours() + 3);
+// console.log(a)
+// console.log(formatarData(a, FormatoData.DIASEMANA_DIA_MES_ANO));
+// console.log('a toUTC+10');
+// a.setHours(a.getHours() + 10);
+// console.log(a);
+
+
+// console.log(formatarData(a, FormatoData.DIASEMANA_DIA_MES_ANO))
+export default Conta; 
