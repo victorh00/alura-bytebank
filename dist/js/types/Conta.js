@@ -15,13 +15,13 @@ const Conta = {
     },
     getGruposTransacoes() {
         const gruposTransacoes = [];
-        const listaTransacoes = structuredClone(Conta.transacoes);
-        const transacoesOrdenadas = listaTransacoes.sort((a, b) => a.data.getTime() - b.data.getTime());
+        const copiaTransacoes = structuredClone(Conta.transacoes);
+        const transacoesOrdenadas = copiaTransacoes.sort((t1, t2) => t1.data.getTime() - t2.data.getTime());
         let labelGrupoAtual = '';
         transacoesOrdenadas.forEach((transacao) => {
-            // console.log(`transacao.data >>> ${transacao.data}`);
+            console.log(`transacao.data >>> ${transacao.data}`);
             let labelTransacaoAtual = transacao.data.toLocaleDateString('pt-br', { month: 'long', year: 'numeric' });
-            // console.log(`labelTransacaoAtual >>> ${labelTransacaoAtual}`);
+            console.log(`labelTransacaoAtual >>> ${labelTransacaoAtual}`);
             if (labelTransacaoAtual !== labelGrupoAtual) {
                 labelGrupoAtual = labelTransacaoAtual;
                 gruposTransacoes.push({
@@ -31,7 +31,8 @@ const Conta = {
             }
             gruposTransacoes.at(-1).transacoes.push(transacao);
         });
-        // console.log(gruposTransacoes);
+        console.log('aqui');
+        console.log(gruposTransacoes);
         return gruposTransacoes;
     },
     debitar(valor) {
@@ -83,4 +84,5 @@ const Conta = {
 // a.setHours(a.getHours() + 10);
 // console.log(a);
 // console.log(formatarData(a, FormatoData.DIASEMANA_DIA_MES_ANO))
+Conta.getGruposTransacoes();
 export default Conta;
