@@ -1,35 +1,30 @@
+import { Transacao } from "./Transacao.js";
+import { TipoTransacao } from "./TipoTransacao.js";
+import { GrupoTransacao } from "./GrupoTransacao.js";
 import { formatarData } from "../utils/formatters.js";
 import { FormatoData } from "./FormatoData.js";
-import { GrupoTransacao } from "./GrupoTransacao.js";
-import { TipoTransacao } from "./TipoTransacao.js";
-import { Transacao } from "./Transacao.js";
 
-/* Mudança de paradigma funcional para POO. */
-export class Conta {
-    nome: string
-    saldo: number = JSON.parse(localStorage.getItem("saldo")) || 0
-    transacoes: Transacao[] = JSON.parse(localStorage.getItem("transacoes"), (key: string, value: any) => {
-        if (key === "data") {
-            return new Date();
+const Conta = {
+    saldo: (JSON.parse(localStorage.getItem('saldo')) || 0) as number,
+
+    transacoes: (JSON.parse(localStorage.getItem('transacoes'), (key: string, value: string) => {
+        if (key === 'data') {
+            return new Date(value);
         }
         return value;
-    }) || [];
-
-    constructor(nome: string) {
-        this.nome = nome;
-    }
+    }) || []) as Transacao[],
 
     getSaldo(): number {
-        return this.saldo;
-    }
+        return Conta.saldo;
+    },
 
     getDataDeAcesso(): Date {
         return new Date();
-    }
+    },
 
     getGruposTransacoes(): GrupoTransacao[] {
         const gruposTransacoes: GrupoTransacao[] = [];
-        const copiaTransacoes: Transacao[] = structuredClone(this.transacoes);
+        const copiaTransacoes: Transacao[] = structuredClone(Conta.transacoes);
         const transacoesOrdenadas: Transacao[] = copiaTransacoes.sort((t1, t2) => t1.data.getTime() - t2.data.getTime());
         let labelGrupoAtual: string = '';
 
@@ -46,26 +41,26 @@ export class Conta {
 
         });
         return gruposTransacoes;
-    }
+    },
 
     debitar(valor: number): void {
         if (valor <= 0) {
             throw new Error('O valor a debitar deve ser maior que zero.');
         }
-        if (valor > this.saldo) {
-            throw new Error(`Saldo insuficiente: ${this.saldo}`);
+        if (valor > Conta.saldo) {
+            throw new Error(`Saldo insuficiente: ${Conta.saldo}`);
         }
-        this.saldo -= valor;
-        localStorage.setItem('saldo', this.saldo.toString());
-    }
+        Conta.saldo -= valor;
+        localStorage.setItem('saldo', Conta.saldo.toString());
+    },
 
     depositar(valor: number): void {
         if (valor <= 0) {
             throw new Error('O valor a debitar deve ser maior que zero.');
         }
-        this.saldo += valor;
-        localStorage.setItem('saldo', this.saldo.toString());
-    }
+        Conta.saldo += valor;
+        localStorage.setItem('saldo', Conta.saldo.toString());
+    },
 
     registrarTransacao(novaTransacao: Transacao): void {
         if (novaTransacao.tipoTransacao == TipoTransacao.DEPOSITO) {
@@ -76,13 +71,10 @@ export class Conta {
         } else {
             throw new Error('Selecione uma transação válida.');
         }
-        this.transacoes.push(novaTransacao);
-        localStorage.setItem('transacoes', JSON.stringify(this.transacoes));
+        Conta.transacoes.push(novaTransacao);
+        localStorage.setItem('transacoes', JSON.stringify(Conta.transacoes));
     }
+};
 
-
-
-}
-
-const conta = new Conta("Joana da Silva Oliveira");
-export default conta;
+Conta.getGruposTransacoes();
+export default Conta; 
