@@ -1,25 +1,21 @@
 import { formatarData } from "../utils/formatters.js";
+import { Armazenador } from "../utils/Armazenador.js";
 import { FormatoData } from "./FormatoData.js";
 import { TipoTransacao } from "./TipoTransacao.js";
 /* Mudança de paradigma funcional para POO. */
 export class Conta {
     nome;
-    saldo = JSON.parse(localStorage.getItem("saldo")) || 0;
-    transacoes = JSON.parse(localStorage.getItem("transacoes"), (key, value) => {
+    saldo = Armazenador.obter("saldo");
+    transacoes = Armazenador.obter("transacoes", (key, value) => {
         if (key === "data") {
             return new Date();
         }
         return value;
     }) || [];
-    constructor(nome) {
-        this.nome = nome;
-    }
-    getSaldo() {
-        return this.saldo;
-    }
-    getDataDeAcesso() {
-        return new Date();
-    }
+    constructor(nome) { this.nome = nome; }
+    getTitular() { return this.nome; }
+    getSaldo() { return this.saldo; }
+    getDataDeAcesso() { return new Date(); }
     getGruposTransacoes() {
         const gruposTransacoes = [];
         const copiaTransacoes = structuredClone(this.transacoes);
@@ -46,14 +42,14 @@ export class Conta {
             throw new Error(`Saldo insuficiente: ${this.saldo}`);
         }
         this.saldo -= valor;
-        localStorage.setItem('saldo', this.saldo.toString());
+        Armazenador.salvar('saldo', this.saldo.toString());
     }
     depositar(valor) {
         if (valor <= 0) {
             throw new Error('O valor a debitar deve ser maior que zero.');
         }
         this.saldo += valor;
-        localStorage.setItem('saldo', this.saldo.toString());
+        Armazenador.salvar('saldo', this.saldo.toString());
     }
     registrarTransacao(novaTransacao) {
         if (novaTransacao.tipoTransacao == TipoTransacao.DEPOSITO) {
@@ -67,7 +63,7 @@ export class Conta {
             throw new Error('Selecione uma transação válida.');
         }
         this.transacoes.push(novaTransacao);
-        localStorage.setItem('transacoes', JSON.stringify(this.transacoes));
+        Armazenador.salvar('transacoes', JSON.stringify(this.transacoes));
     }
 }
 const conta = new Conta("Joana da Silva Oliveira");

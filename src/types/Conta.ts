@@ -1,4 +1,5 @@
 import { formatarData } from "../utils/formatters.js";
+import { Armazenador } from "../utils/Armazenador.js";
 import { FormatoData } from "./FormatoData.js";
 import { GrupoTransacao } from "./GrupoTransacao.js";
 import { TipoTransacao } from "./TipoTransacao.js";
@@ -6,28 +7,22 @@ import { Transacao } from "./Transacao.js";
 
 /* Mudança de paradigma funcional para POO. */
 export class Conta {
-    nome: string
-    saldo: number = JSON.parse(localStorage.getItem("saldo")) || 0
-    transacoes: Transacao[] = JSON.parse(localStorage.getItem("transacoes"), (key: string, value: any) => {
-        if (key === "data") {
-            return new Date();
-        }
+    protected nome: string
+    protected saldo: number = Armazenador.obter("saldo");
+    private transacoes: Transacao[] = Armazenador.obter("transacoes", (key: string, value: any) => {
+        if (key === "data") { return new Date(); }
         return value;
     }) || [];
 
-    constructor(nome: string) {
-        this.nome = nome;
-    }
+    constructor(nome: string) { this.nome = nome; }
 
-    getSaldo(): number {
-        return this.saldo;
-    }
+    public getTitular() { return this.nome; }
 
-    getDataDeAcesso(): Date {
-        return new Date();
-    }
+    public getSaldo(): number { return this.saldo; }
 
-    getGruposTransacoes(): GrupoTransacao[] {
+    public getDataDeAcesso(): Date { return new Date(); }
+
+    public getGruposTransacoes(): GrupoTransacao[] {
         const gruposTransacoes: GrupoTransacao[] = [];
         const copiaTransacoes: Transacao[] = structuredClone(this.transacoes);
         const transacoesOrdenadas: Transacao[] = copiaTransacoes.sort((t1, t2) => t1.data.getTime() - t2.data.getTime());
@@ -48,7 +43,7 @@ export class Conta {
         return gruposTransacoes;
     }
 
-    debitar(valor: number): void {
+    private debitar(valor: number): void {
         if (valor <= 0) {
             throw new Error('O valor a debitar deve ser maior que zero.');
         }
@@ -56,18 +51,18 @@ export class Conta {
             throw new Error(`Saldo insuficiente: ${this.saldo}`);
         }
         this.saldo -= valor;
-        localStorage.setItem('saldo', this.saldo.toString());
+        Armazenador.salvar('saldo', this.saldo.toString());
     }
 
-    depositar(valor: number): void {
+    private depositar(valor: number): void {
         if (valor <= 0) {
             throw new Error('O valor a debitar deve ser maior que zero.');
         }
         this.saldo += valor;
-        localStorage.setItem('saldo', this.saldo.toString());
+        Armazenador.salvar('saldo', this.saldo.toString());
     }
 
-    registrarTransacao(novaTransacao: Transacao): void {
+    public registrarTransacao(novaTransacao: Transacao): void {
         if (novaTransacao.tipoTransacao == TipoTransacao.DEPOSITO) {
             this.depositar(novaTransacao.valor);
         } else if (novaTransacao.tipoTransacao == TipoTransacao.TRANSFERENCIA || novaTransacao.tipoTransacao == TipoTransacao.PGTO_BOLETO) {
@@ -77,11 +72,8 @@ export class Conta {
             throw new Error('Selecione uma transação válida.');
         }
         this.transacoes.push(novaTransacao);
-        localStorage.setItem('transacoes', JSON.stringify(this.transacoes));
+        Armazenador.salvar('transacoes', JSON.stringify(this.transacoes));
     }
-
-
-
 }
 
 const conta = new Conta("Joana da Silva Oliveira");
