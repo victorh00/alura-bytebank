@@ -7,20 +7,20 @@ import { Transacao } from "./Transacao.js";
 
 /* Mudança de paradigma funcional para POO. */
 export class Conta {
-    protected nome: string
+    protected nome: string;
     protected saldo: number = Armazenador.obter("saldo");
     private transacoes: Transacao[] = Armazenador.obter("transacoes", (key: string, value: any) => {
         if (key === "data") { return new Date(); }
         return value;
     }) || [];
 
-    constructor(nome: string) { this.nome = nome; }
+    constructor(nome: string) { this.nome = nome; };
 
-    public getTitular() { return this.nome; }
+    public getTitular() { return this.nome; };
 
-    public getSaldo(): number { return this.saldo; }
+    public getSaldo(): number { return this.saldo; };
 
-    public getDataDeAcesso(): Date { return new Date(); }
+    public getDataDeAcesso(): Date { return new Date(); };
 
     public getGruposTransacoes(): GrupoTransacao[] {
         const gruposTransacoes: GrupoTransacao[] = [];
@@ -41,7 +41,7 @@ export class Conta {
 
         });
         return gruposTransacoes;
-    }
+    };
 
     private debitar(valor: number): void {
         if (valor <= 0) {
@@ -52,7 +52,7 @@ export class Conta {
         }
         this.saldo -= valor;
         Armazenador.salvar('saldo', this.saldo.toString());
-    }
+    };
 
     private depositar(valor: number): void {
         if (valor <= 0) {
@@ -60,7 +60,7 @@ export class Conta {
         }
         this.saldo += valor;
         Armazenador.salvar('saldo', this.saldo.toString());
-    }
+    };
 
     public registrarTransacao(novaTransacao: Transacao): void {
         if (novaTransacao.tipoTransacao == TipoTransacao.DEPOSITO) {
@@ -73,7 +73,7 @@ export class Conta {
         }
         this.transacoes.push(novaTransacao);
         Armazenador.salvar('transacoes', JSON.stringify(this.transacoes));
-    }
+    };
 }
 
 const conta = new Conta("Joana da Silva Oliveira");
