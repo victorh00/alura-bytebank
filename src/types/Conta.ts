@@ -4,6 +4,7 @@ import { FormatoData } from "./FormatoData.js";
 import { GrupoTransacao } from "./GrupoTransacao.js";
 import { TipoTransacao } from "./TipoTransacao.js";
 import { Transacao } from "./Transacao.js";
+import { validaDebito, validaDeposito } from "./Decorators.js"
 
 export class Conta {
     protected nome: string;
@@ -42,21 +43,21 @@ export class Conta {
         return gruposTransacoes;
     };
 
+    @validaDebito
     private debitar(valor: number): void {
-        if (valor <= 0) {
-            throw new Error('O valor a debitar deve ser maior que zero.');
-        }
-        if (valor > this.saldo) {
-            throw new Error(`Saldo insuficiente: ${this.saldo}`);
-        }
+        ////// Movido para o decorator @validaDebito
+        // if (valor <= 0) {
+        //     throw new Error('O valor a debitar deve ser maior que zero.');
+        // }
+        // if (valor > this.saldo) {
+        //     throw new Error(`Saldo insuficiente: ${this.saldo}`);
+        // }
         this.saldo -= valor;
         Armazenador.salvar('saldo', this.saldo.toString());
     };
 
+    @validaDeposito
     private depositar(valor: number): void {
-        if (valor <= 0) {
-            throw new Error('O valor a debitar deve ser maior que zero.');
-        }
         this.saldo += valor;
         Armazenador.salvar('saldo', this.saldo.toString());
     };
@@ -75,5 +76,16 @@ export class Conta {
     };
 }
 
+export class ContaPremium extends Conta {
+    registrarTransacao(transacao: Transacao): void {
+        if (transacao.tipoTransacao === TipoTransacao.DEPOSITO) {
+            console.log("ganhou um bônus de 0.50 centavos");
+            transacao.valor += 0.5;
+        }
+        super.registrarTransacao(transacao);
+    }
+}
+
 const conta = new Conta("Joana da Silva Oliveira");
+const contaPremium = new ContaPremium("Maria da Silva");
 export default conta;
