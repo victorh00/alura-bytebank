@@ -10,7 +10,8 @@ export class Armazenador {
     static obter<T>(chave: string, reviver?: (this: any, key: string, value: any) => any): T | null {
         const valor = localStorage.getItem(chave);
         if (valor === null) { return null };
-        if (reviver) { return JSON.parse(chave, reviver) as T };
+        if (reviver) { return JSON.parse(valor, reviver) as T };
         return JSON.parse(valor) as T;
     }; 
 }
+

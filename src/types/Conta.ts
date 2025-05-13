@@ -5,11 +5,10 @@ import { GrupoTransacao } from "./GrupoTransacao.js";
 import { TipoTransacao } from "./TipoTransacao.js";
 import { Transacao } from "./Transacao.js";
 
-/* Mudança de paradigma funcional para POO. */
 export class Conta {
     protected nome: string;
-    protected saldo: number = Armazenador.obter("saldo");
-    private transacoes: Transacao[] = Armazenador.obter("transacoes", (key: string, value: any) => {
+    protected saldo: number = Armazenador.obter<number>("saldo");
+    private transacoes: Transacao[] = Armazenador.obter<Transacao[]>("transacoes", (key: string, value: any) => {
         if (key === "data") { return new Date(); }
         return value;
     }) || [];
